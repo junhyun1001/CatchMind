@@ -16,7 +16,7 @@ public class GameDataDTO implements Serializable {
 	public int roomId;
 
 	public int score = 0;
-	public boolean isReady;
+	public boolean boolData;
 	
 	public GameDataDTO(String id, String code, int score) {
 		this.id = id;
@@ -30,10 +30,10 @@ public class GameDataDTO implements Serializable {
 		this.data = data;
 	}
 	
-	public GameDataDTO(String id, String code, boolean isReady) {
+	public GameDataDTO(String id, String code, boolean boolData) {
 		this.id = id;
 		this.code = code;
-		this.isReady = isReady;
+		this.boolData = boolData;
 	}
 	
 	public GameDataDTO(String id, String code, ImageIcon icon) {

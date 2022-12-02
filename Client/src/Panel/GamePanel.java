@@ -39,6 +39,7 @@ public class GamePanel extends JPanel {
 //	public PlayerInfo p4 = new PlayerInfo();
 
 	private JTextPane textArea;
+	public JScrollPane chatScrollPane;
 	private JTextField chatTextField;
 	private JButton readyBtn;
 	private ArrayList<String> wordArr;
@@ -63,6 +64,7 @@ public class GamePanel extends JPanel {
 
 	public GamePanel(MainFrame mainFrame, RoomPanel roomPanel) {
 		this.mainFrame = mainFrame;
+		this.roomPanel = roomPanel;
 		this.id = mainFrame.getId();
 		this.ois = mainFrame.getOIS();
 		this.oos = mainFrame.getOOS();
@@ -73,7 +75,7 @@ public class GamePanel extends JPanel {
 		setLayout(null);
 
 		// 그림 그리는 패널
-		drawingPanel = new DrawingPanel(mainFrame);
+		drawingPanel = new DrawingPanel(mainFrame, this);
 		add(drawingPanel);
 		add(drawingPanel.paintPanel);
 
@@ -89,7 +91,7 @@ public class GamePanel extends JPanel {
 		add(roomPanel.p3);
 		add(roomPanel.p4);
 
-		JScrollPane chatScrollPane = new JScrollPane();
+		chatScrollPane = new JScrollPane();
 		chatScrollPane.setBounds(250, 567, 527, 131);
 		add(chatScrollPane);
 
@@ -134,14 +136,18 @@ public class GamePanel extends JPanel {
 			}
 		});
 
-		// 모든 유저가 준비됐다는 사실을 알면 불러와야함
-//		roomPanel.getWordsList();
-
 		exitBtn.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mainFrame.changePanel("RoomPanel");
+//				mainFrame.changePanel("RoomPanel");
+				GamePanel.this.removeAll();
+				GamePanel.this.setVisible(false);
+				
+				roomPanel.revalidate();
+				roomPanel.repaint();
+				getParent().add(roomPanel);
+				roomPanel.setVisible(true);
 			}
 
 		});
@@ -192,6 +198,10 @@ public class GamePanel extends JPanel {
 	// 서버에 점수 보내고 설정해주기
 	public void setScore(GameDataDTO gameDataDTO) {
 
+	}
+	
+	public void changeReadyBtn() {
+		readyBtn.setVisible(false);
 	}
 
 	public void sendMessage(String msg) {

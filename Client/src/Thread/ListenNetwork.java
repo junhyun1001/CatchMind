@@ -102,13 +102,25 @@ public class ListenNetwork extends Thread {
 						roomPanel.setPlayer(gameDataDTO);
 						break;
 					case "ALLREADY":
-						roomPanel.allReadyCount = gameDataDTO.score; // 모든 플레이어가 준비된 카운트를 지정해줌
+						// 모든 플레이어가 준비 되면 그림판을 초기화 시키고 준비 버튼 숨김
 						mainFrame.gamePanel.drawingPanel.eraseAll();
+						mainFrame.gamePanel.changeReadyBtn();
+						
 						break;
 					case "MAKEROOM":
 						roomPanel.setRoomData(gameDataDTO);
 						if (gameDataDTO != null) {
 							roomPanel.makeRow();
+						}
+						break;
+					case "START":
+						if(roomPanel.p1.turn == gameDataDTO.boolData) {
+							System.out.println("같음");
+							mainFrame.gamePanel.drawingPanel.hideSelectPanel();
+						}
+						else {
+							roomPanel.p2.turn = !roomPanel.p2.turn;
+							mainFrame.gamePanel.drawingPanel.hideSelectPanel();
 						}
 						break;
 					}

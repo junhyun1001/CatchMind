@@ -46,6 +46,8 @@ public class JavaGameServer extends JFrame {
 
 	private int readyCount = 0; // 몇명이 준비 했는지 체크하는 변수
 
+	private boolean turn = true; // 출제자인지 아닌지 구분
+
 	/**
 	 * Launch the application.
 	 */
@@ -203,6 +205,8 @@ public class JavaGameServer extends JFrame {
 			// 로그아웃 후 유저 벡터 보냄
 			writeAllUserVec();
 			--readyCount;
+			if (readyCount < 0)
+				readyCount = 0;
 			System.out.println("Logout: " + readyCount);
 
 			// 로그아웃 후 플레이어 벡터 보냄
@@ -456,6 +460,44 @@ public class JavaGameServer extends JFrame {
 		}
 
 		// 모든 유저가 준비되면 드로잉 패널을 초기화 시킴
+		public void writeAllTurn() {
+			for (int i = 0; i < user_vc.size(); i++) {
+				UserService user = (UserService) user_vc.elementAt(i);
+				if (user.userStatus == "O")
+					user.writeOneTurn();
+			}
+		}
+
+		public void writeOneTurn() {
+			GameDataDTO gameDataDTO = new GameDataDTO("SERVER", "START", turn);
+			try {
+				oos.writeObject(gameDataDTO);
+			} catch (IOException e) {
+				appendText("oos.writeObject(ob) error");
+				try {
+					ois.close();
+					oos.close();
+					client_socket.close();
+					client_socket = null;
+					ois = null;
+					oos = null;
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				logout();
+			}
+		}
+
+		// 나를 제외한 User들에게 방송. 각각의 UserService Thread의 WriteONe() 을 호출한다.
+		public void writeOthersTurn() {
+			for (int i = 0; i < user_vc.size(); i++) {
+				UserService user = (UserService) user_vc.elementAt(i);
+				if (user != this && user.userStatus == "O")
+					user.writeOneTurn();
+			}
+		}
+
+		// 모든 유저가 준비되면 드로잉 패널을 초기화 시킴
 		public void writeAllAllReady() {
 			for (int i = 0; i < user_vc.size(); i++) {
 				UserService user = (UserService) user_vc.elementAt(i);
@@ -515,11 +557,14 @@ public class JavaGameServer extends JFrame {
 
 		// 모든 유저 목록을 보냄
 		public void writeAllPlayerVec() {
+			// 플레이어 이름을 문자열 + , 로 보낸 후 클라이언트에서 분리
 			String users = "";
 			for (int i = 0; i < playerNameVec.size(); i++) {
 				users += playerNameVec.elementAt(i);
 				users += ",";
 			}
+
+			// 아이콘 벡터를 보내야함
 
 			for (int i = 0; i < user_vc.size(); i++) {
 				UserService user = (UserService) user_vc.elementAt(i);
@@ -536,6 +581,9 @@ public class JavaGameServer extends JFrame {
 		public void enterRoom(GameDataDTO gameDataDTO) {
 			playerNameVec.add(gameDataDTO.id); // 방에 입장하는 플레이어 id를 벡터에 추가함
 			writeAllPlayerVec();
+
+			playerIconVec.add(icon);
+			System.out.println(playerIconVec);
 
 			String roomId = gameDataDTO.data; // 만들때는 부여할 room_id가 없어서 기존 makeroom에 enterroom기능도 추가했다.
 			for (int i = 0; i < roomVec.size(); i++) {
@@ -717,24 +765,19 @@ public class JavaGameServer extends JFrame {
 						} else if (gameDataDTO.code.matches("READY")) {
 							// 사용자가 준비 버튼을 눌렀을 때
 
-							if (gameDataDTO.isReady) {
+							if (gameDataDTO.boolData) {
 								++readyCount;
 								System.out.println("ready: " + readyCount);
 								writeAllGameChat(id + "님이 준비를 하였습니다.");
-								if (readyCount == 1) { // 준비 카운트가 4가 되면 게임 시작
+								if (readyCount == 2) { // 모두 준비가 되면 시작
 									// 클라이언트한테 모두 다 지우라고 시킴
 									writeAllAllReady();
 									writeAllGameChat("----------------------게임을 시작합니다.------------------------");
-
-									// 준비 버튼 다른걸로 바꿔야함
-									// 그릴사람 정해야됨
-
 								}
 							} else { // 준비 취소 버튼을 눌렀을 때
 								--readyCount;
 								writeAllGameChat(id + "님이 준비를 취소 하였습니다.");
 							}
-
 						} else if (gameDataDTO.code.matches("MAKEROOM")) {
 							makeAndEnterRoom(gameDataDTO);
 							updateRoomList();

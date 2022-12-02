@@ -60,7 +60,6 @@ public class RoomPanel extends JPanel {
 	private String id;
 	public ImageIcon icon;
 	public JLabel userNameLabel;
-	public int allReadyCount = 0;
 
 	// 네트워크 및 전송 오브젝트
 	private Socket socket;
@@ -148,7 +147,9 @@ public class RoomPanel extends JPanel {
 					sendObject(gameDataDTO);
 					// 방에 입장하는 플레이어 정보를 서버에 넘겨줌
 					sendIdIcon();
+					RoomPanel.this.setVisible(false);
 					mainFrame.changePanel("GamePanel");
+					
 
 				}
 			}

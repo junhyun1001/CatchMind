@@ -31,8 +31,9 @@ import Start.StartPanel;
 
 public class DrawingPanel extends JPanel {
 	private MainFrame mainFrame;
+	private GamePanel gamePanel;
 	private ImageIcon board = new ImageIcon("./src/img/board.png");
-	protected SelectPaintPanel paintPanel = new SelectPaintPanel(this);
+	public SelectPaintPanel paintPanel = new SelectPaintPanel(this);
 
 	private static String id;
 	// 네트워크 및 전송 오브젝트
@@ -93,8 +94,9 @@ public class DrawingPanel extends JPanel {
 		super.paintComponent(g);
 	};
 
-	public DrawingPanel(MainFrame mainFrame) {
+	public DrawingPanel(MainFrame mainFrame, GamePanel gamePanel) {
 		this.mainFrame = mainFrame;
+		this.gamePanel = gamePanel;
 		socket = mainFrame.getSocket();
 		id = mainFrame.getId();
 		ois = mainFrame.getOIS();
@@ -227,9 +229,22 @@ public class DrawingPanel extends JPanel {
 		g3.drawRect(0, 0, this.getWidth() - 1, this.getHeight() - 1);
 	}
 
+	// 전체 지우기 메소드
 	public void eraseAll() {
 		repaint();
 		createPaint();
+	}
+
+	// 출제자가 아니면 패널을 숨김
+	public void hideSelectPanel() {
+		gamePanel.chatScrollPane.setBounds(250, 475, 527, 225);
+		paintPanel.setVisible(false);
+	}
+
+	// 출제자면 패널을 보여줌
+	public void showSelectPanel() {
+		gamePanel.chatScrollPane.setBounds(250, 567, 527, 131);
+		paintPanel.setVisible(true);
 	}
 
 	public static void sendObject(Object ob) { // 서버로 메세지를 보내는 메소드
@@ -363,7 +378,7 @@ public class DrawingPanel extends JPanel {
 
 	}
 
-	static class SelectPaintPanel extends JPanel implements ActionListener {
+	public static class SelectPaintPanel extends JPanel implements ActionListener {
 		private DrawingPanel drawingPanel;
 
 		public SelectPaintPanel(DrawingPanel drawingPanel) {
@@ -556,6 +571,7 @@ public class DrawingPanel extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 
 		}
+
 	}
 
 	public void AppendImage(ImageIcon ori_icon) {
