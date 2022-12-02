@@ -8,7 +8,7 @@ public class PlayerInfo extends JPanel {
 	public JLabel idLabel;
 	public JLabel iconLabel;
 	public JLabel scoreLabel;
-	public boolean turn = true;
+	public boolean turn; // 내 차례이면 true, 아니면 false
 
 	public PlayerInfo() {
 		setLayout(null);
