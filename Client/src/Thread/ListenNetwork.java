@@ -10,6 +10,7 @@ import javax.swing.ImageIcon;
 import Network.ChatDTO;
 import Network.DrawDTO;
 import Network.GameDataDTO;
+import Panel.DrawingPanel;
 import Panel.PlayerInfo;
 import Panel.RoomPanel;
 import Start.MainFrame;
@@ -33,10 +34,6 @@ public class ListenNetwork extends Thread {
 		ois = mainFrame.getOIS();
 
 	}
-
-//	public ListenNetwork(GamePanel gamePanel) {
-//		this.gamePanel = gamePanel;
-//	}
 
 	public void run() {
 		while (true) {
@@ -105,7 +102,6 @@ public class ListenNetwork extends Thread {
 						// 모든 플레이어가 준비 되면 그림판을 초기화 시키고 준비 버튼 숨김
 						mainFrame.gamePanel.drawingPanel.eraseAll();
 						mainFrame.gamePanel.changeReadyBtn();
-						
 						break;
 					case "MAKEROOM":
 						roomPanel.setRoomData(gameDataDTO);
@@ -114,12 +110,11 @@ public class ListenNetwork extends Thread {
 						}
 						break;
 					case "START":
-						if(roomPanel.p1.turn == gameDataDTO.boolData) {
-							System.out.println("같음");
-							mainFrame.gamePanel.drawingPanel.hideSelectPanel();
-						}
+						// START 프로토콜을 받으면 서버에서 차례를 정해준다.
+						if (gameDataDTO.boolData == true)
+							mainFrame.gamePanel.appendText(gameDataDTO.id + "출제자 입니다.");
 						else {
-							roomPanel.p2.turn = !roomPanel.p2.turn;
+							mainFrame.gamePanel.appendText(gameDataDTO.id + "문제를 맞추세요.");
 							mainFrame.gamePanel.drawingPanel.hideSelectPanel();
 						}
 						break;
@@ -137,7 +132,7 @@ public class ListenNetwork extends Thread {
 					break;
 				} // catch문 끝
 			} // 바깥 catch문끝
-		} // while()
+		} // while()74
 	} // run()
 }
 // class
