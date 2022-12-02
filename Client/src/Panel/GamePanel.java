@@ -138,22 +138,22 @@ public class GamePanel extends JPanel {
 
 		exitBtn.addActionListener(new ActionListener() {
 
-	         @Override
-	         public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 //	            mainFrame.changePanel("RoomPanel");
-	            GamePanel.this.removeAll();
-	            GamePanel.this.setVisible(false);
-	            
-	            roomPanel.revalidate();
-	            roomPanel.repaint();
-	            getParent().add(roomPanel);
-	            roomPanel.setVisible(true);
-	            
-	            GameDataDTO gameDataDTO = new GameDataDTO(id, "EXITROOM", roomPanel.getRoomId());
-	               sendObject(gameDataDTO);
-	         }
+				GamePanel.this.removeAll();
+				GamePanel.this.setVisible(false);
 
-	      });
+				roomPanel.revalidate();
+				roomPanel.repaint();
+				getParent().add(roomPanel);
+				roomPanel.setVisible(true);
+
+				GameDataDTO gameDataDTO = new GameDataDTO(id, "EXITROOM", roomPanel.getRoomId());
+				sendObject(gameDataDTO);
+			}
+
+		});
 		roomNameLabel.setText(RoomPanel.getRoomName());
 	}
 
@@ -162,7 +162,7 @@ public class GamePanel extends JPanel {
 
 		}
 	}
-	
+
 	// 서버로 준비상태 전송
 	public void sendReady(boolean isReady) {
 		GameDataDTO gameDataDTO = new GameDataDTO(id, "READY", isReady);
@@ -202,13 +202,13 @@ public class GamePanel extends JPanel {
 	public void setScore(GameDataDTO gameDataDTO) {
 
 	}
-	
+
 	// 서버에 차례 넘기도록 요청
-	public void sendNext() {
-		GameDataDTO gameDataDTO = new GameDataDTO(id, "NEXT", "");
+	public void requestNextTurn() {
+		GameDataDTO gameDataDTO = new GameDataDTO(id, "NEXT", "Next Turn");
 		sendObject(gameDataDTO);
 	}
-	
+
 	public void changeReadyBtn() {
 		readyBtn.setVisible(false);
 	}
@@ -224,9 +224,11 @@ public class GamePanel extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			// Send button을 누르거나 메시지 입력하고 Enter key 치면
 			if (e.getSource() == chatTextField) {
-
 				String msg = null;
 				msg = chatTextField.getText();
+				if (msg.equals(wordArr.get(0))) {
+					requestNextTurn();
+				}
 				sendMessage(msg); // 서버로 전송
 				chatTextField.setText("");
 				chatTextField.requestFocus();

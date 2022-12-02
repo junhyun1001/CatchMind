@@ -212,8 +212,6 @@ public class JavaGameServer extends JFrame {
 			// 로그아웃 후 플레이어 벡터 보냄
 			playerNameVec.remove(id);
 			writeAllPlayerVec();
-			
-			
 
 		}
 
@@ -586,7 +584,7 @@ public class JavaGameServer extends JFrame {
 
 			playerIconVec.add(icon);
 			System.out.println(playerIconVec);
-			
+
 			String roomId = gameDataDTO.data; // 만들때는 부여할 room_id가 없어서 기존 makeroom에 enterroom기능도 추가했다.
 			for (int i = 0; i < roomVec.size(); i++) {
 				GameRoom gameRoom = (GameRoom) roomVec.elementAt(i);
@@ -793,6 +791,11 @@ public class JavaGameServer extends JFrame {
 						} else if (gameDataDTO.code.matches("EXITROOM")) {
 							exitRoom(gameDataDTO);
 							updateRoomList();
+						} else if (gameDataDTO.code.matches("NEXT")) {
+							// 차례 넘기기 요청을 받음
+							writeOneTurn(true);
+							writeOthersTurn(false);
+							
 						}
 					} else { // ... 기타 object는 모두 방송한다.
 						writeAllObject(drawDTO);

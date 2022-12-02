@@ -111,8 +111,10 @@ public class ListenNetwork extends Thread {
 						break;
 					case "START":
 						// START 프로토콜을 받으면 서버에서 차례를 정해준다.
-						if (gameDataDTO.boolData == true)
+						if (gameDataDTO.boolData == true) {
 							mainFrame.gamePanel.appendText(gameDataDTO.id + "출제자 입니다.");
+							mainFrame.gamePanel.drawingPanel.showSelectPanel();
+						}
 						else {
 							mainFrame.gamePanel.appendText(gameDataDTO.id + "문제를 맞추세요.");
 							mainFrame.gamePanel.drawingPanel.hideSelectPanel();
