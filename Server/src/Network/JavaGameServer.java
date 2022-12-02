@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Random;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -160,6 +161,7 @@ public class JavaGameServer extends JFrame {
 		public ImageIcon icon;
 		public String userStatus;
 
+		public Random rand = new Random();
 		public String[] word = { "상어", "닭", "고래", "코끼리", "토끼" };
 		private int score = 0; // 정답
 
@@ -282,6 +284,15 @@ public class JavaGameServer extends JFrame {
 				UserService user = (UserService) user_vc.elementAt(i);
 				if (user.userStatus == "O")
 					user.writeOneWord(splitWord);
+			}
+		}
+
+		// 나를 제외한 User들에게 방송. 각각의 UserService Thread의 WriteONe() 을 호출한다.
+		public void writeOthersWord(String str) {
+			for (int i = 0; i < user_vc.size(); i++) {
+				UserService user = (UserService) user_vc.elementAt(i);
+				if (user != this && user.userStatus == "O")
+					user.writeOneWord(str);
 			}
 		}
 
@@ -773,8 +784,10 @@ public class JavaGameServer extends JFrame {
 									// 즉 특정 플레이어를 지목해서 설정해줄 수 있어야 함 (playerNameVec을 이용할 수 있나?)
 									// 클라이언트에서 받는 boolean 값이 true이면 출제자(페인트 패널이 보여야함)
 									// 클라이언트에서 받는 boolean 값이 false이면 맞추는 쪽(페인트 패널이 안보여야 함)
+									writeOneWord(word[rand.nextInt(5)]); // 단어 배열에서 랜덤으로 뽑아옴, 출제자한테만 보여줌
 									writeOneTurn(true);
 									writeOthersTurn(false);
+
 								}
 							} else { // 준비 취소 버튼을 눌렀을 때
 								--readyCount;
@@ -786,16 +799,17 @@ public class JavaGameServer extends JFrame {
 						} else if (gameDataDTO.code.matches("ENTERROOM")) {
 							enterRoom(gameDataDTO);
 							updateRoomList();
-							writeAllWord(); // 대기방에 입장하면 단어를 미리 가져옴
+//							writeAllWord(); // 대기방에 입장하면 단어를 미리 가져옴
 
 						} else if (gameDataDTO.code.matches("EXITROOM")) {
 							exitRoom(gameDataDTO);
 							updateRoomList();
-						} else if (gameDataDTO.code.matches("NEXT")) {
-							// 차례 넘기기 요청을 받음
+						} else if (gameDataDTO.code.matches("ANSWER")) {
+							// 정답을 맞춘 경우 차례를 넘기고 단어를 바꿈
+							writeOneWord(word[rand.nextInt(5)]); // 단어 배열에서 랜덤으로 뽑아옴, 출제자한테만 보여줌
+							writeOthersWord("제시어");
 							writeOneTurn(true);
 							writeOthersTurn(false);
-							
 						}
 					} else { // ... 기타 object는 모두 방송한다.
 						writeAllObject(drawDTO);

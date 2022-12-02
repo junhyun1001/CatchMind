@@ -244,16 +244,16 @@ public class RoomPanel extends JPanel {
 	}
 
 	// 모든 플레이어가 준비 되면 WORD코드를 받고, WORD 코드를 받으면 단어를 저장시킴
-	public void saveWords(GameDataDTO gameDataDTO) {
-		String wordsList[];
-		wordsList = gameDataDTO.data.split(",");
-		wordArr = new ArrayList<>(Arrays.asList(wordsList));
-
-	}
-
-	public ArrayList<String> getWordsList() {
-		return wordArr;
-	}
+//	public void saveWords(GameDataDTO gameDataDTO) {
+//		String wordsList[];
+//		wordsList = gameDataDTO.data.split(",");
+//		wordArr = new ArrayList<>(Arrays.asList(wordsList));
+//
+//	}
+//
+//	public ArrayList<String> getWordsList() {
+//		return wordArr;
+//	}
 
 	// textArea에 출력
 	public void appendText(String msg) {

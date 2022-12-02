@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -42,17 +41,18 @@ public class GamePanel extends JPanel {
 	public JScrollPane chatScrollPane;
 	private JTextField chatTextField;
 	private JButton readyBtn;
-	private ArrayList<String> wordArr;
+//	private ArrayList<String> wordArr;
 
 	private String id;
 	private boolean isReady = true;
+	public String word;
 
 	// 그림판
 	private String color;
 
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
-	private final JLabel wordLabel = new JLabel("제시어");
+	public JLabel wordLabel = new JLabel("제시어");
 
 	private int count = 0;
 
@@ -69,7 +69,7 @@ public class GamePanel extends JPanel {
 		this.ois = mainFrame.getOIS();
 		this.oos = mainFrame.getOOS();
 		this.roomPanel = roomPanel;
-		wordArr = roomPanel.getWordsList();
+//		wordArr = roomPanel.getWordsList();
 
 		setBackground(new Color(48, 106, 169));
 		setLayout(null);
@@ -122,8 +122,6 @@ public class GamePanel extends JPanel {
 
 		wordLabel.setBounds(47, 621, 127, 74);
 		add(wordLabel);
-
-		wordLabel.setText(wordArr.get(0));
 
 		readyBtn.addActionListener(new ActionListener() {
 			@Override
@@ -203,11 +201,11 @@ public class GamePanel extends JPanel {
 
 	}
 
-	// 서버에 차례 넘기도록 요청
-	public void requestNextTurn() {
-		GameDataDTO gameDataDTO = new GameDataDTO(id, "NEXT", "Next Turn");
-		sendObject(gameDataDTO);
-	}
+	// 서버에 차례 넘기도록 요청 && 그림판 초기화
+//	public void requestNextTurn() {
+//		GameDataDTO gameDataDTO = new GameDataDTO(id, "NEXT", "Next Turn");
+//		sendObject(gameDataDTO);
+//	}
 
 	public void changeReadyBtn() {
 		readyBtn.setVisible(false);
@@ -216,6 +214,16 @@ public class GamePanel extends JPanel {
 	public void sendMessage(String msg) {
 		ChatDTO chatDTO = new ChatDTO(id, "GAMECHAT", msg);
 		sendObject(chatDTO);
+	}
+	
+	public void sendWord(String word) {
+		GameDataDTO gameDataDTO = new GameDataDTO(id, "ANSWER", word);
+		sendObject(gameDataDTO);
+	}
+
+	public void setWord(String word) {
+		this.word = word;
+		wordLabel.setText(word);
 	}
 
 	// keyboard enter key 치면 서버로 전송
@@ -226,10 +234,8 @@ public class GamePanel extends JPanel {
 			if (e.getSource() == chatTextField) {
 				String msg = null;
 				msg = chatTextField.getText();
-				if (msg.equals(wordArr.get(0))) {
-					requestNextTurn();
-				}
 				sendMessage(msg); // 서버로 전송
+				sendWord(msg);
 				chatTextField.setText("");
 				chatTextField.requestFocus();
 			}

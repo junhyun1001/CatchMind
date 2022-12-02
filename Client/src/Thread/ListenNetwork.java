@@ -90,7 +90,8 @@ public class ListenNetwork extends Thread {
 					switch (gameDataDTO.code) {
 					// 단어를 받아옴
 					case "WORD":
-						roomPanel.saveWords(gameDataDTO);
+						System.out.println(gameDataDTO.data);
+						mainFrame.gamePanel.setWord(gameDataDTO.data);
 						break;
 					case "SCORE":
 						break;
@@ -120,6 +121,8 @@ public class ListenNetwork extends Thread {
 							mainFrame.gamePanel.drawingPanel.hideSelectPanel();
 						}
 						break;
+					case "UPDATESCORE":
+						// 정답을 맞추면 점수가 올라감
 					}
 				}
 			} catch (IOException e) {
