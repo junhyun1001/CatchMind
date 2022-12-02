@@ -123,7 +123,7 @@ public class GamePanel extends JPanel {
 		wordLabel.setBounds(47, 621, 127, 74);
 		add(wordLabel);
 
-//		wordLabel.setText(wordArr.get(0));
+		wordLabel.setText(wordArr.get(0));
 
 		readyBtn.addActionListener(new ActionListener() {
 			@Override
@@ -138,19 +138,22 @@ public class GamePanel extends JPanel {
 
 		exitBtn.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-//				mainFrame.changePanel("RoomPanel");
-				GamePanel.this.removeAll();
-				GamePanel.this.setVisible(false);
-				
-				roomPanel.revalidate();
-				roomPanel.repaint();
-				getParent().add(roomPanel);
-				roomPanel.setVisible(true);
-			}
+	         @Override
+	         public void actionPerformed(ActionEvent e) {
+//	            mainFrame.changePanel("RoomPanel");
+	            GamePanel.this.removeAll();
+	            GamePanel.this.setVisible(false);
+	            
+	            roomPanel.revalidate();
+	            roomPanel.repaint();
+	            getParent().add(roomPanel);
+	            roomPanel.setVisible(true);
+	            
+	            GameDataDTO gameDataDTO = new GameDataDTO(id, "EXITROOM", roomPanel.getRoomId());
+	               sendObject(gameDataDTO);
+	         }
 
-		});
+	      });
 		roomNameLabel.setText(RoomPanel.getRoomName());
 	}
 
@@ -159,7 +162,7 @@ public class GamePanel extends JPanel {
 
 		}
 	}
-
+	
 	// 서버로 준비상태 전송
 	public void sendReady(boolean isReady) {
 		GameDataDTO gameDataDTO = new GameDataDTO(id, "READY", isReady);
@@ -198,6 +201,12 @@ public class GamePanel extends JPanel {
 	// 서버에 점수 보내고 설정해주기
 	public void setScore(GameDataDTO gameDataDTO) {
 
+	}
+	
+	// 서버에 차례 넘기도록 요청
+	public void sendNext() {
+		GameDataDTO gameDataDTO = new GameDataDTO(id, "NEXT", "");
+		sendObject(gameDataDTO);
 	}
 	
 	public void changeReadyBtn() {
