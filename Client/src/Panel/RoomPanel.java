@@ -67,6 +67,7 @@ public class RoomPanel extends JPanel {
 	private ObjectOutputStream oos;
 
 	static String roomName;
+	static String roomId;
 
 	String roomData = null;
 	String roomList[];
@@ -142,15 +143,13 @@ public class RoomPanel extends JPanel {
 				if (e.getClickCount() == 2) {
 					String data = roomList[roomTable.getSelectedRow()];
 					String data2[] = data.split(" ");
+					roomId = data2[0];
 					roomName = data2[1];
-					GameDataDTO gameDataDTO = new GameDataDTO(id, "ENTERROOM", data2[0]);
+					GameDataDTO gameDataDTO = new GameDataDTO(id, "ENTERROOM", roomId);
 					sendObject(gameDataDTO);
 					// 방에 입장하는 플레이어 정보를 서버에 넘겨줌
-					sendIdIcon();
 					RoomPanel.this.setVisible(false);
 					mainFrame.changePanel("GamePanel");
-					
-
 				}
 			}
 		});
@@ -224,13 +223,12 @@ public class RoomPanel extends JPanel {
 		chatTextField.addActionListener(chatAction);
 	}
 
-	private void sendIdIcon() {
-		ChatDTO chatDTO = new ChatDTO(id, "UPDATEPLAYER", icon);
-		sendObject(chatDTO);
-	}
-
 	public void setRoomData(GameDataDTO gameDataDTO) {
 		roomData = gameDataDTO.data; // 방 번호, 이름, 현재 인원, 총 인원이 담긴 문자열을 받아옴
+	}
+
+	public String getRoomId() {
+		return roomId;
 	}
 
 	public void makeRow() {
