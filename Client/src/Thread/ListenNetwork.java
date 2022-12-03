@@ -92,10 +92,8 @@ public class ListenNetwork extends Thread {
 						mainFrame.gamePanel.setWord(gameDataDTO.data);
 						break;
 					case "SCORE":
-						roomPanel.setScore(gameDataDTO);
-						System.out.println(gameDataDTO.id + "님이 점수를 획득했습니다. " + gameDataDTO.score);
+						mainFrame.gamePanel.appendText(gameDataDTO.id + "님이 점수를 획득했습니다. " + gameDataDTO.score + "점");
 						break;
-
 					case "UPDATEPLAYER":
 						// 플레이어가 게임방에 입장하면 패널을 업데이트 시킴
 						roomPanel.setPlayer(gameDataDTO);
@@ -114,10 +112,10 @@ public class ListenNetwork extends Thread {
 					case "START":
 						// START 프로토콜을 받으면 서버에서 차례를 정해준다.
 						if (gameDataDTO.boolData == true) {
-							mainFrame.gamePanel.appendText("----------------------출제자 입니다.----------------------");
+							mainFrame.gamePanel.appendText("--------------------------------출제자 입니다.--------------------------------");
 							mainFrame.gamePanel.drawingPanel.showSelectPanel();
 						} else {
-							mainFrame.gamePanel.appendText("----------------------문제를 맞추세요.----------------------");
+							mainFrame.gamePanel.appendText("--------------------------------문제를 맞추세요.--------------------------------");
 							mainFrame.gamePanel.drawingPanel.hideSelectPanel();
 						}
 						break;

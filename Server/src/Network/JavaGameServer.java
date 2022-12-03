@@ -338,7 +338,7 @@ public class JavaGameServer extends JFrame {
 		}
 
 		// 유저들에게 점수 전송
-		public void writeOneScore(int score) {
+		public void writeOneScore(String id, int score) {
 			GameDataDTO gameDataDTO = new GameDataDTO(id, "SCORE", score);
 			try {
 				oos.writeObject(gameDataDTO);
@@ -359,20 +359,21 @@ public class JavaGameServer extends JFrame {
 		}
 
 		// 나를 제외한 User들에게 방송. 각각의 UserService Thread의 WriteONe() 을 호출한다.
-		public void writeOtherScore(int score) {
-			for (int i = 0; i < user_vc.size(); i++) {
-				UserService user = (UserService) user_vc.elementAt(i);
-				if (user != this && user.userStatus == "O")
-					user.writeOneScore(score);
-			}
-		}
+//		public void writeOtherScore(int score) {
+//			for (int i = 0; i < user_vc.size(); i++) {
+//				UserService user = (UserService) user_vc.elementAt(i);
+//				if (user != this && user.userStatus == "O")
+//					user.writeOneScore(score);
+//			}
+//		}
 
 		public void writeAllScore() {
 			for (int i = 0; i < user_vc.size(); i++) {
 				UserService user = (UserService) user_vc.elementAt(i);
 				if (user.id.equals(id) && user.userStatus == "O") {
 					user.score++;
-					user.writeOneScore(user.score);
+					user.writeOneScore(user.id, user.score);
+					writeAllGameChat(user.id + "님이 정답을 맞췄습니다." + user.score + "점");
 				}
 			}
 		}
@@ -818,7 +819,6 @@ public class JavaGameServer extends JFrame {
 						} else if (gameDataDTO.code.matches("EXITROOM")) {
 							exitRoom(gameDataDTO);
 							updateRoomList();
-
 						} else if (gameDataDTO.code.matches("ANSWER")) {
 							// 정답을 맞춘 경우 차례를 넘기고 단어를 바꿈
 							if (randomWord.equals(gameDataDTO.data)) {
@@ -826,11 +826,10 @@ public class JavaGameServer extends JFrame {
 								writeOthersTurn(false);
 								randomWord = word[rand.nextInt(5)];
 								writeOneWord(randomWord);
-								writeAllGameChat(gameDataDTO.id + "님이 정답을 맞췄습니다.");
+//								writeAllGameChat(gameDataDTO.id + "님이 정답을 맞췄습니다.");
 
 								// 단어를 맞추면 각 유저 스레드마다 score값을 해당 id만 올림
 								writeAllScore();
-
 							}
 						}
 					} else { // ... 기타 object는 모두 방송한다.
