@@ -4,13 +4,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class PlayerInfo extends JPanel {
-	public int score = 0;
+
 	public JLabel idLabel;
 	public JLabel iconLabel;
 	public JLabel scoreLabel;
-	public boolean turn; // 내 차례이면 true, 아니면 false
+	public int score;
 
 	public PlayerInfo() {
+
 		setLayout(null);
 		setBounds(8, 158, 230, 115);
 
@@ -22,7 +23,7 @@ public class PlayerInfo extends JPanel {
 		idLabel.setBounds(12, 10, 90, 45);
 		add(idLabel);
 
-		scoreLabel = new JLabel("정답: " + score);
+		scoreLabel = new JLabel();
 		scoreLabel.setBounds(12, 57, 90, 45);
 		add(scoreLabel);
 	}

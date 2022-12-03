@@ -32,11 +32,6 @@ public class GamePanel extends JPanel {
 	private RoomPanel roomPanel;
 	public DrawingPanel drawingPanel;
 
-//	public PlayerInfo p1 = new PlayerInfo();
-//	public PlayerInfo p2 = new PlayerInfo();
-//	public PlayerInfo p3 = new PlayerInfo();
-//	public PlayerInfo p4 = new PlayerInfo();
-
 	private JTextPane textArea;
 	public JScrollPane chatScrollPane;
 	private JTextField chatTextField;
@@ -121,6 +116,8 @@ public class GamePanel extends JPanel {
 		add(readyBtn);
 
 		wordLabel.setBounds(47, 621, 127, 74);
+		wordLabel.setFont(new Font("휴먼편지체", Font.BOLD, 40));
+		wordLabel.setHorizontalAlignment(JLabel.CENTER);
 		add(wordLabel);
 
 		readyBtn.addActionListener(new ActionListener() {
@@ -135,10 +132,8 @@ public class GamePanel extends JPanel {
 		});
 
 		exitBtn.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-//	            mainFrame.changePanel("RoomPanel");
 				GamePanel.this.removeAll();
 				GamePanel.this.setVisible(false);
 
@@ -196,17 +191,6 @@ public class GamePanel extends JPanel {
 		}
 	}
 
-	// 서버에 점수 보내고 설정해주기
-	public void setScore(GameDataDTO gameDataDTO) {
-
-	}
-
-	// 서버에 차례 넘기도록 요청 && 그림판 초기화
-//	public void requestNextTurn() {
-//		GameDataDTO gameDataDTO = new GameDataDTO(id, "NEXT", "Next Turn");
-//		sendObject(gameDataDTO);
-//	}
-
 	public void changeReadyBtn() {
 		readyBtn.setVisible(false);
 	}
@@ -215,7 +199,7 @@ public class GamePanel extends JPanel {
 		ChatDTO chatDTO = new ChatDTO(id, "GAMECHAT", msg);
 		sendObject(chatDTO);
 	}
-	
+
 	public void sendWord(String word) {
 		GameDataDTO gameDataDTO = new GameDataDTO(id, "ANSWER", word);
 		sendObject(gameDataDTO);
@@ -235,7 +219,7 @@ public class GamePanel extends JPanel {
 				String msg = null;
 				msg = chatTextField.getText();
 				sendMessage(msg); // 서버로 전송
-				sendWord(msg);
+				sendWord(msg.trim());
 				chatTextField.setText("");
 				chatTextField.requestFocus();
 			}

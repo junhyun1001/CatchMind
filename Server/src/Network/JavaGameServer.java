@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
 
@@ -41,11 +42,15 @@ public class JavaGameServer extends JFrame {
 	private Vector<String> playerNameVec = new Vector<>(); // 게임에 참가 했을 때 이름 저장하는 벡터
 	private Vector<ImageIcon> playerIconVec = new Vector<>(); // 게임에 참가 했을 때 아이콘 저장하는 벡터
 
-//	private HashMap<String, ImageIcon> playerInfoMap = new HashMap<>(); // 게임에 입장한 플레이어 정보를 저장
 	private Vector roomVec = new Vector<>();
 	private int roomId = 1;
 
 	private int readyCount = 0; // 몇명이 준비 했는지 체크하는 변수
+
+	public String[] word = { "상어", "닭", "고래", "코끼리", "토끼" };
+	private String randomWord;
+
+	private int score = 0; // 정답
 
 	/**
 	 * Launch the application.
@@ -162,8 +167,7 @@ public class JavaGameServer extends JFrame {
 		public String userStatus;
 
 		public Random rand = new Random();
-		public String[] word = { "상어", "닭", "고래", "코끼리", "토끼" };
-		private int score = 0; // 정답
+		public int score = 0; // 정답
 
 		private boolean turn = true; // 출제자인지 아닌지 구분
 
@@ -334,8 +338,8 @@ public class JavaGameServer extends JFrame {
 		}
 
 		// 유저들에게 점수 전송
-		public void writeOneScore(Object obj) {
-			GameDataDTO gameDataDTO = new GameDataDTO("SERVER", "SCORE", score);
+		public void writeOneScore(int score) {
+			GameDataDTO gameDataDTO = new GameDataDTO(id, "SCORE", score);
 			try {
 				oos.writeObject(gameDataDTO);
 			} catch (IOException e) {
@@ -354,11 +358,22 @@ public class JavaGameServer extends JFrame {
 			}
 		}
 
-		public void writeAllScore(Object obj) {
+		// 나를 제외한 User들에게 방송. 각각의 UserService Thread의 WriteONe() 을 호출한다.
+		public void writeOtherScore(int score) {
 			for (int i = 0; i < user_vc.size(); i++) {
 				UserService user = (UserService) user_vc.elementAt(i);
-				if (user.userStatus == "O")
-					user.writeOneScore(obj);
+				if (user != this && user.userStatus == "O")
+					user.writeOneScore(score);
+			}
+		}
+
+		public void writeAllScore() {
+			for (int i = 0; i < user_vc.size(); i++) {
+				UserService user = (UserService) user_vc.elementAt(i);
+				if (user.id.equals(id) && user.userStatus == "O") {
+					user.score++;
+					user.writeOneScore(user.score);
+				}
 			}
 		}
 
@@ -574,7 +589,6 @@ public class JavaGameServer extends JFrame {
 				users += playerNameVec.elementAt(i);
 				users += ",";
 			}
-
 			// 아이콘 벡터를 보내야함
 
 			for (int i = 0; i < user_vc.size(); i++) {
@@ -764,11 +778,10 @@ public class JavaGameServer extends JFrame {
 						} else if (drawDTO.code.matches("IMAGE")) {
 							writeOneObject(drawDTO);
 						}
-
 					} else if (object instanceof GameDataDTO) {
 						gameDataDTO = (GameDataDTO) object;
 						if (gameDataDTO.code.matches("SCORE")) {
-							writeAllScore(score);
+//							writeAllScore(score);
 						} else if (gameDataDTO.code.matches("READY")) {
 							// 사용자가 준비 버튼을 눌렀을 때
 
@@ -784,9 +797,12 @@ public class JavaGameServer extends JFrame {
 									// 즉 특정 플레이어를 지목해서 설정해줄 수 있어야 함 (playerNameVec을 이용할 수 있나?)
 									// 클라이언트에서 받는 boolean 값이 true이면 출제자(페인트 패널이 보여야함)
 									// 클라이언트에서 받는 boolean 값이 false이면 맞추는 쪽(페인트 패널이 안보여야 함)
-									writeOneWord(word[rand.nextInt(5)]); // 단어 배열에서 랜덤으로 뽑아옴, 출제자한테만 보여줌
+									randomWord = word[rand.nextInt(5)];
 									writeOneTurn(true);
 									writeOthersTurn(false);
+									writeOneWord(randomWord); // 단어 최초 생성(한 번만 실행됨)
+
+									// 전체 플레이어 점수를 0으로 설정
 
 								}
 							} else { // 준비 취소 버튼을 눌렀을 때
@@ -799,21 +815,26 @@ public class JavaGameServer extends JFrame {
 						} else if (gameDataDTO.code.matches("ENTERROOM")) {
 							enterRoom(gameDataDTO);
 							updateRoomList();
-//							writeAllWord(); // 대기방에 입장하면 단어를 미리 가져옴
-
 						} else if (gameDataDTO.code.matches("EXITROOM")) {
 							exitRoom(gameDataDTO);
 							updateRoomList();
+
 						} else if (gameDataDTO.code.matches("ANSWER")) {
 							// 정답을 맞춘 경우 차례를 넘기고 단어를 바꿈
-							writeOneWord(word[rand.nextInt(5)]); // 단어 배열에서 랜덤으로 뽑아옴, 출제자한테만 보여줌
-							writeOthersWord("제시어");
-							writeOneTurn(true);
-							writeOthersTurn(false);
+							if (randomWord.equals(gameDataDTO.data)) {
+								writeOneTurn(true);
+								writeOthersTurn(false);
+								randomWord = word[rand.nextInt(5)];
+								writeOneWord(randomWord);
+								writeAllGameChat(gameDataDTO.id + "님이 정답을 맞췄습니다.");
+
+								// 단어를 맞추면 각 유저 스레드마다 score값을 해당 id만 올림
+								writeAllScore();
+
+							}
 						}
 					} else { // ... 기타 object는 모두 방송한다.
 						writeAllObject(drawDTO);
-
 					}
 
 				} catch (IOException e) {

@@ -23,7 +23,6 @@ public class ListenNetwork extends Thread {
 
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
-	public PlayerInfo p1 = new PlayerInfo();
 
 	public ListenNetwork(MainFrame mainFrame, RoomPanel roomPanel) {
 		this.mainFrame = mainFrame;
@@ -90,11 +89,13 @@ public class ListenNetwork extends Thread {
 					switch (gameDataDTO.code) {
 					// 단어를 받아옴
 					case "WORD":
-						System.out.println(gameDataDTO.data);
 						mainFrame.gamePanel.setWord(gameDataDTO.data);
 						break;
 					case "SCORE":
+						roomPanel.setScore(gameDataDTO);
+						System.out.println(gameDataDTO.id + "님이 점수를 획득했습니다. " + gameDataDTO.score);
 						break;
+
 					case "UPDATEPLAYER":
 						// 플레이어가 게임방에 입장하면 패널을 업데이트 시킴
 						roomPanel.setPlayer(gameDataDTO);
@@ -113,16 +114,13 @@ public class ListenNetwork extends Thread {
 					case "START":
 						// START 프로토콜을 받으면 서버에서 차례를 정해준다.
 						if (gameDataDTO.boolData == true) {
-							mainFrame.gamePanel.appendText(gameDataDTO.id + "출제자 입니다.");
+							mainFrame.gamePanel.appendText("----------------------출제자 입니다.----------------------");
 							mainFrame.gamePanel.drawingPanel.showSelectPanel();
-						}
-						else {
-							mainFrame.gamePanel.appendText(gameDataDTO.id + "문제를 맞추세요.");
+						} else {
+							mainFrame.gamePanel.appendText("----------------------문제를 맞추세요.----------------------");
 							mainFrame.gamePanel.drawingPanel.hideSelectPanel();
 						}
 						break;
-					case "UPDATESCORE":
-						// 정답을 맞추면 점수가 올라감
 					}
 				}
 			} catch (IOException e) {

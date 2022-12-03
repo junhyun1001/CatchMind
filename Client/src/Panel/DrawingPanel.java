@@ -239,6 +239,7 @@ public class DrawingPanel extends JPanel {
 	public void hideSelectPanel() {
 		gamePanel.chatScrollPane.setBounds(250, 475, 527, 225);
 		paintPanel.setVisible(false);
+		gamePanel.wordLabel.setText("");
 	}
 
 	// 출제자면 패널을 보여줌

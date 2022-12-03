@@ -41,10 +41,14 @@ import Thread.ListenNetwork;
 public class RoomPanel extends JPanel {
 	private ImageIcon bodyBackgroundImg = new ImageIcon("./src/img/body_background.jpg");
 
-	public PlayerInfo p1 = new PlayerInfo();
-	public PlayerInfo p2 = new PlayerInfo();
-	public PlayerInfo p3 = new PlayerInfo();
-	public PlayerInfo p4 = new PlayerInfo();
+	private MainFrame mainFrame;
+
+	public PlayerInfo p1;
+	public PlayerInfo p2;
+	public PlayerInfo p3;
+	public PlayerInfo p4;
+
+	public String playerList[];
 
 	private JTextPane textArea;
 	private JTextField chatTextField;
@@ -84,6 +88,11 @@ public class RoomPanel extends JPanel {
 		ois = mainFrame.getOIS();
 		oos = mainFrame.getOOS();
 //		userArr = mainFrame.getUserArr();
+
+		p1 = new PlayerInfo();
+		p2 = new PlayerInfo();
+		p3 = new PlayerInfo();
+		p4 = new PlayerInfo();
 
 		setBounds(0, 0, 1040, 800);
 		setLayout(null);
@@ -341,7 +350,6 @@ public class RoomPanel extends JPanel {
 
 	// 플레이어가 입장할 때 마다 서버에서 플레이어 정보를 받아와서 업데이트 시킴
 	public void setPlayer(GameDataDTO gameDataDTO) {
-		String playerList[];
 		playerList = gameDataDTO.data.split(",");
 		if (playerList.length == 1) {
 			p1.idLabel.setText(playerList[0]);
@@ -357,6 +365,15 @@ public class RoomPanel extends JPanel {
 			p2.idLabel.setText(playerList[1]);
 			p3.idLabel.setText(playerList[2]);
 			p4.idLabel.setText(playerList[3]);
+		}
+	}
+
+	// 플레이어 점수 세팅
+	public void setScore(GameDataDTO gameDataDTO) {
+		if (p1.idLabel.getText().equals(gameDataDTO.id)) {
+			p1.scoreLabel.setText("점수:" + gameDataDTO.score);
+		} else if (p2.idLabel.getText().equals(gameDataDTO.id)) {
+			p2.scoreLabel.setText("점수:" + gameDataDTO.score);
 		}
 	}
 }

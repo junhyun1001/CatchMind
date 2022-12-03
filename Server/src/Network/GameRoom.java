@@ -7,7 +7,7 @@ public class GameRoom {
 	public int roomId; // 방 고유번호
 	public int maxUser = 4; // 최대 방 인원 수
 	private int user_count;
-	private Vector roomUserVec = new Vector(); // room user list
+	private Vector<String> roomUserVec = new Vector<>(); // room user list
 	private String roomOwner;
 	private String roomName;
 
