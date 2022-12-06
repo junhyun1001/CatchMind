@@ -1,5 +1,6 @@
 package Panel;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -73,24 +74,40 @@ public class CharacterSelectPanel extends JPanel {
 		setBounds(0, 0, 1040, 800);
 		setLayout(null);
 
-		JLabel lblNewLabel = new JLabel("캐릭터 고르기");
-		lblNewLabel.setFont(new Font("휴먼편지체", Font.BOLD, 40));
-		lblNewLabel.setBounds(410, 54, 219, 54);
+		generateCharacterBtn();
+		
+		JLabel lblNewLabel = new JLabel("Catch");
+		lblNewLabel.setForeground(new Color(255, 255, 255));
+		lblNewLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.BOLD, 42));
+		lblNewLabel.setBounds(456, 10, 128, 27);
+		lblNewLabel.setHorizontalAlignment(JLabel.CENTER);
 		add(lblNewLabel);
 
-		generateCharacterBtn();
+		JLabel lblNewLabel_1 = new JLabel("Mind");
+		lblNewLabel_1.setForeground(new Color(255, 255, 255));
+		lblNewLabel_1.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.BOLD, 42));
+		lblNewLabel_1.setBounds(456, 47, 128, 26);
+		lblNewLabel_1.setHorizontalAlignment(JLabel.CENTER);
+		add(lblNewLabel_1);
+		
+		JLabel lblNewLabel_2 = new JLabel();
+		lblNewLabel_2.setBounds(0, 83, 1040, 13);
+		lblNewLabel_2.setIcon(new ImageIcon(StartPanel.class.getResource("/img/background_line.png")));
+		add(lblNewLabel_2);
 
 		myCharacter = new JLabel();
 		myCharacter.setBounds(349, 561, 150, 150);
 		add(myCharacter);
 
 		idLabel = new JLabel("ID: " + mainFrame.getId());
+		idLabel.setForeground(new Color(255, 255, 255));
 		idLabel.setFont(new Font("휴먼편지체", Font.BOLD, 40));
-		idLabel.setBounds(511, 561, 284, 54);
+		idLabel.setBounds(511, 612, 284, 54);
 		add(idLabel);
 
-		JButton startBtn = new JButton("게임 시작");
-		startBtn.setBounds(511, 657, 127, 54);
+		JButton startBtn = new JButton("");
+		startBtn.setIcon(new ImageIcon(StartPanel.class.getResource("/img/startGameBtn.png")));
+		startBtn.setBounds(869, 51, 79, 32);
 		setFont(new Font("휴먼편지체", Font.BOLD, 25));
 		add(startBtn);
 		startBtn.addActionListener(new ActionListener() {

@@ -168,6 +168,8 @@ public class JavaGameServer extends JFrame {
 
 		public Random rand = new Random();
 		public int score = 0; // 정답
+		public int max = 0; // 최고 정답자
+		public String maxUser = "";
 
 		private boolean turn = true; // 출제자인지 아닌지 구분
 
@@ -248,6 +250,7 @@ public class JavaGameServer extends JFrame {
 				users += userNameVec.elementAt(i);
 				users += ",";
 			}
+
 			for (int i = 0; i < user_vc.size(); i++) {
 				UserService user = (UserService) user_vc.elementAt(i);
 				if (user.userStatus == "O") {
@@ -374,6 +377,10 @@ public class JavaGameServer extends JFrame {
 					user.score++;
 					user.writeOneScore(user.id, user.score);
 					writeAllGameChat(user.id + "님이 정답을 맞췄습니다." + user.score + "점");
+					if (max < score) {
+						max = score;
+						maxUser = user.id;
+					}
 				}
 			}
 		}
@@ -399,8 +406,43 @@ public class JavaGameServer extends JFrame {
 			}
 		}
 
+		public void writeAllIconVec() {
+
+			ImageIcon icon = null;
+			for (int i = 0; i < playerIconVec.size(); i++) {
+				icon = playerIconVec.get(i);
+			}
+
+			for (int i = 0; i < playerIconVec.size(); i++) {
+				UserService user = (UserService) user_vc.elementAt(i);
+				if (user.userStatus == "O")
+					user.writeOneIconVec(icon);
+			}
+		}
+
+		// 플레이어 캐릭터 벡터 보냄
+		public void writeOneIconVec(ImageIcon icon) {
+			GameDataDTO gameDataDTO = new GameDataDTO(id, "ICONVEC", icon);
+			try {
+				oos.writeObject(gameDataDTO);
+			} catch (IOException e) {
+				appendText("oos.writeObject(ob) error");
+				try {
+					ois.close();
+					oos.close();
+					client_socket.close();
+					client_socket = null;
+					ois = null;
+					oos = null;
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				logout();
+			}
+		}
+
 		public void writeAllIcon(Object obj) {
-			for (int i = 0; i < user_vc.size(); i++) {
+			for (int i = 0; i < userIconVec.size(); i++) {
 				UserService user = (UserService) user_vc.elementAt(i);
 				if (user.userStatus == "O")
 					user.writeOneIcon(obj);
@@ -515,6 +557,35 @@ public class JavaGameServer extends JFrame {
 			}
 		}
 
+		// 종료를 알림
+		public void writeAllEnd() {
+			for (int i = 0; i < user_vc.size(); i++) {
+				UserService user = (UserService) user_vc.elementAt(i);
+				if (user.userStatus == "O")
+					user.writeOneEnd();
+			}
+		}
+
+		public void writeOneEnd() {
+			GameDataDTO gameDataDTO = new GameDataDTO("SERVER", "END", "End Game");
+			try {
+				oos.writeObject(gameDataDTO);
+			} catch (IOException e) {
+				appendText("oos.writeObject(ob) error");
+				try {
+					ois.close();
+					oos.close();
+					client_socket.close();
+					client_socket = null;
+					ois = null;
+					oos = null;
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				logout();
+			}
+		}
+
 		// 나를 제외한 User들에게 방송. 각각의 UserService Thread의 WriteONe() 을 호출한다.
 		public void writeOthersTurn(boolean turn) {
 			for (int i = 0; i < user_vc.size(); i++) {
@@ -590,12 +661,12 @@ public class JavaGameServer extends JFrame {
 				users += playerNameVec.elementAt(i);
 				users += ",";
 			}
-			// 아이콘 벡터를 보내야함
 
 			for (int i = 0; i < user_vc.size(); i++) {
 				UserService user = (UserService) user_vc.elementAt(i);
 				if (user.userStatus == "O") {
 					user.writeOnePlayerVec(users);
+//					user.writeOneIconVec(icon);
 				}
 			}
 		}
@@ -609,7 +680,7 @@ public class JavaGameServer extends JFrame {
 			writeAllPlayerVec();
 
 			playerIconVec.add(icon);
-			System.out.println(playerIconVec);
+			writeAllIconVec();
 
 			String roomId = gameDataDTO.data; // 만들때는 부여할 room_id가 없어서 기존 makeroom에 enterroom기능도 추가했다.
 			for (int i = 0; i < roomVec.size(); i++) {
@@ -793,7 +864,8 @@ public class JavaGameServer extends JFrame {
 								if (readyCount == 2) { // 모두 준비가 되면 시작
 									// 클라이언트한테 모두 다 지우라고 시킴
 									writeAllAllReady();
-									writeAllGameChat("----------------------게임을 시작합니다.------------------------");
+									writeAllGameChat(
+											"-------------------------------------게임을 시작합니다.---------------------------------------");
 									// 출제자: turn = true; 플레이어 turn = false;를 방송해야 함
 									// 즉 특정 플레이어를 지목해서 설정해줄 수 있어야 함 (playerNameVec을 이용할 수 있나?)
 									// 클라이언트에서 받는 boolean 값이 true이면 출제자(페인트 패널이 보여야함)
@@ -821,7 +893,7 @@ public class JavaGameServer extends JFrame {
 							updateRoomList();
 						} else if (gameDataDTO.code.matches("ANSWER")) {
 							// 정답을 맞춘 경우 차례를 넘기고 단어를 바꿈
-							if (randomWord.equals(gameDataDTO.data)) {
+							if (randomWord != null && randomWord.equals(gameDataDTO.data)) {
 								writeOneTurn(true);
 								writeOthersTurn(false);
 								randomWord = word[rand.nextInt(5)];
@@ -831,6 +903,9 @@ public class JavaGameServer extends JFrame {
 								// 단어를 맞추면 각 유저 스레드마다 score값을 해당 id만 올림
 								writeAllScore();
 							}
+
+						} else if (gameDataDTO.code.matches(gameDataDTO.code)) {
+
 						}
 					} else { // ... 기타 object는 모두 방송한다.
 						writeAllObject(drawDTO);

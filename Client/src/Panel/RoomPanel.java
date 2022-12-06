@@ -36,6 +36,7 @@ import javax.swing.text.StyledDocument;
 import Network.ChatDTO;
 import Network.GameDataDTO;
 import Start.MainFrame;
+import Start.StartPanel;
 import Thread.ListenNetwork;
 
 public class RoomPanel extends JPanel {
@@ -59,6 +60,7 @@ public class RoomPanel extends JPanel {
 	private JTable roomTable;
 
 	private ArrayList<String> userArr; // 현재 접속한 유저 목록을 저장
+	private ArrayList<ImageIcon> iconArr;
 	private ArrayList<String> wordArr; // RoomPanel이 만들어질 때 단어 목록을 서버에서 가져옴
 
 	private String id;
@@ -96,20 +98,21 @@ public class RoomPanel extends JPanel {
 
 		setBounds(0, 0, 1040, 800);
 		setLayout(null);
-		setBackground(new Color(235, 246, 254));
+		setBackground(new Color(255, 255, 255));
 
 		setBounds(0, 0, 1040, 800);
 		setLayout(null);
 		setBackground(new Color(235, 246, 254));
 
-		JPanel menuPanel = new JPanel();
-		menuPanel.setBounds(34, 10, 971, 83);
-		add(menuPanel);
-		menuPanel.setLayout(null);
-		menuPanel.setBorder(new LineBorder(Color.black, 1));
-		menuPanel.setBackground(new Color(235, 246, 254));
+//		JPanel menuPanel = new JPanel();
+//		menuPanel.setBounds(34, 10, 971, 83);
+//		add(menuPanel);
+//		menuPanel.setLayout(null);
+//		menuPanel.setBorder(new LineBorder(Color.black, 1));
+//		menuPanel.setBackground(new Color(235, 246, 254));
 
-		JButton makeRoomBtn = new JButton("방 만들기");
+		JButton makeRoomBtn = new JButton();
+		makeRoomBtn.setIcon(new ImageIcon(StartPanel.class.getResource("/img/makeRoomBtn.png")));
 		makeRoomBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String createRoomName = JOptionPane.showInputDialog(RoomPanel.this, "방 이름", "방 만들기", 3);
@@ -120,8 +123,22 @@ public class RoomPanel extends JPanel {
 				}
 			}
 		});
-		makeRoomBtn.setBounds(12, 10, 128, 63);
-		menuPanel.add(makeRoomBtn);
+		makeRoomBtn.setBounds(671, 51, 79, 32);
+		add(makeRoomBtn);
+
+		JLabel lblNewLabel = new JLabel("Catch");
+		lblNewLabel.setForeground(new Color(255, 255, 255));
+		lblNewLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.BOLD, 42));
+		lblNewLabel.setBounds(456, 10, 128, 27);
+		lblNewLabel.setHorizontalAlignment(JLabel.CENTER);
+		add(lblNewLabel);
+
+		JLabel lblNewLabel_1 = new JLabel("Mind");
+		lblNewLabel_1.setForeground(new Color(255, 255, 255));
+		lblNewLabel_1.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.BOLD, 42));
+		lblNewLabel_1.setBounds(456, 47, 128, 26);
+		lblNewLabel_1.setHorizontalAlignment(JLabel.CENTER);
+		add(lblNewLabel_1);
 
 		// -------------- 대기방 리스트 테이블 ------------- //
 
@@ -173,40 +190,26 @@ public class RoomPanel extends JPanel {
 		userListArea.setEditable(false);
 		userScrollPane.setViewportView(userListArea);
 
-		JPanel myInfoPanel = new JPanel();
-		myInfoPanel.setBackground(new Color(255, 255, 255));
-		myInfoPanel.setBounds(793, 494, 212, 229);
-		add(myInfoPanel);
-		myInfoPanel.setLayout(null);
-		myInfoPanel.setBorder(new LineBorder(Color.black, 1));
-
-		characterLabel = new JLabel();
-		characterLabel.setBounds(12, 10, 188, 163);
-		characterLabel.setHorizontalAlignment(JLabel.CENTER);
-		myInfoPanel.add(characterLabel);
-
-		userNameLabel = new JLabel("UserName");
-		userNameLabel.setFont(new Font("휴먼편지체", Font.PLAIN, 18));
-		userNameLabel.setBounds(12, 183, 188, 36);
-		userNameLabel.setHorizontalAlignment(JLabel.CENTER);
-		myInfoPanel.add(userNameLabel);
-
 		JLabel roomListLabel = new JLabel("방 목록");
+		roomListLabel.setForeground(new Color(255, 255, 255));
 		roomListLabel.setFont(new Font("휴먼편지체", Font.BOLD, 18));
 		roomListLabel.setBounds(34, 103, 80, 20);
 		add(roomListLabel);
 
 		JLabel chatListLabel = new JLabel("채팅");
+		chatListLabel.setForeground(new Color(255, 255, 255));
 		chatListLabel.setFont(new Font("휴먼편지체", Font.BOLD, 18));
 		chatListLabel.setBounds(34, 469, 80, 20);
 		add(chatListLabel);
 
 		JLabel profileLabel = new JLabel("내 프로필");
+		profileLabel.setForeground(new Color(255, 255, 255));
 		profileLabel.setFont(new Font("휴먼편지체", Font.BOLD, 18));
 		profileLabel.setBounds(793, 464, 80, 20);
 		add(profileLabel);
 
 		JLabel userListLabel = new JLabel("유저 목록");
+		userListLabel.setForeground(new Color(255, 255, 255));
 		userListLabel.setFont(new Font("휴먼편지체", Font.BOLD, 18));
 		userListLabel.setBounds(793, 103, 80, 20);
 		add(userListLabel);
@@ -227,6 +230,34 @@ public class RoomPanel extends JPanel {
 		// 네트워크 수신 스레드 작동
 		ListenNetwork net = new ListenNetwork(mainFrame, this);
 		net.start();
+
+		JLabel lblNewLabel_2 = new JLabel();
+		lblNewLabel_2.setBounds(0, 83, 1040, 13);
+		lblNewLabel_2.setIcon(new ImageIcon(StartPanel.class.getResource("/img/background_line.png")));
+		add(lblNewLabel_2);
+
+		userNameLabel = new JLabel("UserName");
+		userNameLabel.setForeground(new Color(255, 255, 255));
+		userNameLabel.setBounds(830, 666, 143, 27);
+		add(userNameLabel);
+		userNameLabel.setFont(new Font("휴먼편지체", Font.PLAIN, 18));
+		userNameLabel.setHorizontalAlignment(JLabel.CENTER);
+
+		characterLabel = new JLabel();
+		characterLabel.setBounds(830, 528, 143, 128);
+		add(characterLabel);
+		characterLabel.setHorizontalAlignment(JLabel.CENTER);
+
+		JButton exitBtn = new JButton();
+		exitBtn.setBounds(927, 51, 79, 32);
+		exitBtn.setIcon(new ImageIcon(StartPanel.class.getResource("/img/exitBtn.png")));
+		exitBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		add(exitBtn);
 
 		TextSendAction chatAction = new TextSendAction();
 		chatTextField.addActionListener(chatAction);
@@ -366,6 +397,25 @@ public class RoomPanel extends JPanel {
 			p3.idLabel.setText(playerList[2]);
 			p4.idLabel.setText(playerList[3]);
 		}
+	}
+
+	public void setIconVec(ImageIcon icon) {
+//		iconArr = new ArrayList<>();
+//		for(int i = 0; i < playerList.length; i++) {
+//			iconArr.add(icon);
+//		}
+
+		p1.iconLabel.setIcon(icon);
+//		else if (playerList.length == 3) {
+//			p1.iconLabel.setIcon(iconArr.get(0));
+//			p1.iconLabel.setIcon(iconArr.get(1));
+//			p1.iconLabel.setIcon(iconArr.get(2));
+//		} else if (playerList.length == 4) {
+//			p1.iconLabel.setIcon(iconArr.get(0));
+//			p1.iconLabel.setIcon(iconArr.get(1));
+//			p1.iconLabel.setIcon(iconArr.get(2));
+//			p1.iconLabel.setIcon(iconArr.get(3));
+//		}
 	}
 
 	// 플레이어 점수 세팅

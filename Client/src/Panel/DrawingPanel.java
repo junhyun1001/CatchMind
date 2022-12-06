@@ -564,6 +564,7 @@ public class DrawingPanel extends JPanel {
 			imgBtn.setBorderPainted(false);
 			imgBtn.setContentAreaFilled(false);
 			imgBtn.setBounds(400, 50, 130, 35);
+			imgBtn.setIcon(new ImageIcon(StartPanel.class.getResource("/img/option.png")));
 			add(imgBtn);
 		}
 

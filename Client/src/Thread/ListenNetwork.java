@@ -5,13 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import javax.swing.ImageIcon;
-
 import Network.ChatDTO;
 import Network.DrawDTO;
 import Network.GameDataDTO;
-import Panel.DrawingPanel;
-import Panel.PlayerInfo;
 import Panel.RoomPanel;
 import Start.MainFrame;
 
@@ -92,11 +88,24 @@ public class ListenNetwork extends Thread {
 						mainFrame.gamePanel.setWord(gameDataDTO.data);
 						break;
 					case "SCORE":
-						mainFrame.gamePanel.appendText(gameDataDTO.id + "님이 점수를 획득했습니다. " + gameDataDTO.score + "점");
+//						mainFrame.gamePanel.appendText(gameDataDTO.id + "님이 점수를 획득했습니다. " + gameDataDTO.score + "점");
+						if (roomPanel.p1.idLabel.getText().equals(gameDataDTO.id)) {
+							roomPanel.p1.scoreLabel.setText("정답: " + gameDataDTO.score);
+						} else if (roomPanel.p2.idLabel.getText().equals(gameDataDTO.id)) {
+							roomPanel.p2.scoreLabel.setText("정답: " + gameDataDTO.score);
+						} else if (roomPanel.p3.idLabel.getText().equals(gameDataDTO.id)) {
+							roomPanel.p3.scoreLabel.setText("정답: " + gameDataDTO.score);
+						} else if (roomPanel.p4.idLabel.getText().equals(gameDataDTO.id)) {
+							roomPanel.p4.scoreLabel.setText("정답: " + gameDataDTO.score);
+						}
 						break;
 					case "UPDATEPLAYER":
 						// 플레이어가 게임방에 입장하면 패널을 업데이트 시킴
 						roomPanel.setPlayer(gameDataDTO);
+						break;
+					case "ICONVEC":
+						roomPanel.setIconVec(gameDataDTO.icon);
+//						System.out.println("받은 아이콘: " + gameDataDTO.icon);
 						break;
 					case "ALLREADY":
 						// 모든 플레이어가 준비 되면 그림판을 초기화 시키고 준비 버튼 숨김
@@ -112,10 +121,12 @@ public class ListenNetwork extends Thread {
 					case "START":
 						// START 프로토콜을 받으면 서버에서 차례를 정해준다.
 						if (gameDataDTO.boolData == true) {
-							mainFrame.gamePanel.appendText("--------------------------------출제자 입니다.--------------------------------");
+//							mainFrame.gamePanel.appendText(
+//									"--------------------------------출제자 입니다.--------------------------------");
 							mainFrame.gamePanel.drawingPanel.showSelectPanel();
 						} else {
-							mainFrame.gamePanel.appendText("--------------------------------문제를 맞추세요.--------------------------------");
+//							mainFrame.gamePanel.appendText(
+//									"--------------------------------문제를 맞추세요.--------------------------------");
 							mainFrame.gamePanel.drawingPanel.hideSelectPanel();
 						}
 						break;

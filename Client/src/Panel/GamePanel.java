@@ -24,6 +24,7 @@ import javax.swing.text.StyledDocument;
 import Network.ChatDTO;
 import Network.GameDataDTO;
 import Start.MainFrame;
+import Start.StartPanel;
 
 public class GamePanel extends JPanel {
 	private ImageIcon bodyBackgroundImg = new ImageIcon("./src/img/body_background.jpg");
@@ -47,7 +48,7 @@ public class GamePanel extends JPanel {
 
 	private ObjectInputStream ois;
 	private ObjectOutputStream oos;
-	public JLabel wordLabel = new JLabel("제시어");
+	public JLabel wordLabel = new JLabel("");
 
 	private int count = 0;
 
@@ -68,6 +69,25 @@ public class GamePanel extends JPanel {
 
 		setBackground(new Color(48, 106, 169));
 		setLayout(null);
+
+		JLabel lblNewLabel = new JLabel("Catch");
+		lblNewLabel.setForeground(new Color(255, 255, 255));
+		lblNewLabel.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.BOLD, 42));
+		lblNewLabel.setBounds(12, 10, 128, 27);
+		lblNewLabel.setHorizontalAlignment(JLabel.CENTER);
+		add(lblNewLabel);
+
+		JLabel lblNewLabel_1 = new JLabel("Mind");
+		lblNewLabel_1.setForeground(new Color(255, 255, 255));
+		lblNewLabel_1.setFont(new Font("Tw Cen MT Condensed Extra Bold", Font.BOLD, 42));
+		lblNewLabel_1.setBounds(12, 47, 128, 26);
+		lblNewLabel_1.setHorizontalAlignment(JLabel.CENTER);
+		add(lblNewLabel_1);
+
+		JLabel lblNewLabel_2 = new JLabel();
+		lblNewLabel_2.setBounds(0, 83, 1040, 13);
+		lblNewLabel_2.setIcon(new ImageIcon(StartPanel.class.getResource("/img/background_line.png")));
+		add(lblNewLabel_2);
 
 		// 그림 그리는 패널
 		drawingPanel = new DrawingPanel(mainFrame, this);
@@ -100,20 +120,30 @@ public class GamePanel extends JPanel {
 		chatTextField.setColumns(10);
 		chatTextField.addActionListener(new TextSendAction());
 
-		JButton exitBtn = new JButton("나가기");
-		exitBtn.setBounds(34, 28, 155, 67);
+		JButton exitBtn = new JButton();
+		exitBtn.setBounds(927, 51, 79, 32);
+		exitBtn.setIcon(new ImageIcon(StartPanel.class.getResource("/img/goToRoomBtn.png")));
+		exitBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
 		add(exitBtn);
 
 		JLabel roomNameLabel = new JLabel();
+		roomNameLabel.setForeground(new Color(255, 255, 255));
 		roomNameLabel.setText("Room Name");
 		roomNameLabel.setFont(new Font("휴먼편지체", Font.BOLD, 40));
-		roomNameLabel.setBounds(250, 27, 527, 90);
+		roomNameLabel.setBounds(332, 10, 375, 60);
 		roomNameLabel.setHorizontalAlignment(JLabel.CENTER);
 		add(roomNameLabel);
 
 		readyBtn = new JButton("준비");
+		readyBtn.setBackground(Color.WHITE);
 		readyBtn.setBounds(869, 708, 107, 43);
 		add(readyBtn);
+		wordLabel.setForeground(new Color(255, 255, 255));
 
 		wordLabel.setBounds(47, 621, 127, 74);
 		wordLabel.setFont(new Font("휴먼편지체", Font.BOLD, 40));
@@ -208,6 +238,11 @@ public class GamePanel extends JPanel {
 	public void setWord(String word) {
 		this.word = word;
 		wordLabel.setText(word);
+	}
+
+	public void sendEnd() {
+		GameDataDTO gameDataDTO = new GameDataDTO("CLIENT", "END", "End game");
+		sendObject(gameDataDTO);
 	}
 
 	// keyboard enter key 치면 서버로 전송
